@@ -1,25 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import { addPost, likePost } from './actions';
 
-function App() {
+const App = ({ posts, addPost, likePost }) => {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleAddPost = () => {
+    if (inputValue.trim() !== '') {
+      addPost(inputValue);
+      setInputValue('');
+    }
+  };
+
+  const handleLikePost = (postId) => {
+    likePost(postId);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Bird Post App</h1>
+      <input type="text" value={inputValue} onChange={handleInputChange} />
+      <button onClick={handleAddPost}>Add Post</button>
+      <ul>
+        {posts.map((post) => (
+          <li key={post.id}>
+            {post.text} - Likes: {post.likes}
+            <button onClick={() => handleLikePost(post.id)}>Like</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
 
-export default App;
+const mapStateToProps = (state) => ({
+  posts: state.posts,
+});
+
+const mapDispatchToProps = {
+  addPost,
+  likePost,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
